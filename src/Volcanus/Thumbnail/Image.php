@@ -336,12 +336,11 @@ class Image
 	 */
 	public function dataUri()
 	{
-		$tempPath = sprintf('%s%s%s', sys_get_temp_dir(), DIRECTORY_SEPARATOR, uniqid('', true));
-		$this->output($tempPath, IMAGETYPE_PNG);
-		$mimeTypeFrom = new \finfo(FILEINFO_MIME_TYPE);
-		$uri = sprintf('data:%s;base64,%s', $mimeTypeFrom->file($tempPath), base64_encode(file_get_contents($tempPath)));
-		unlink($tempPath);
-		return $uri;
+		ob_start();
+		$this->output(null, IMAGETYPE_PNG);
+		$data = ob_get_contents();
+		ob_end_clean();
+		return $this->buildDataUri($data, $this->imageTypeToMimeType(IMAGETYPE_PNG));
 	}
 
 	/**
@@ -462,7 +461,7 @@ class Image
 	{
 		$imageInfo = (function_exists('getimagesizefromstring'))
 			? @getimagesizefromstring($data)
-			: @getimagesize(sprintf('data://application/octet-stream;base64,%s', base64_encode($data)));
+			: @getimagesize($this->buildDataUri($data));
 		if (!is_array($imageInfo)) {
 			throw new \InvalidArgumentException('Invalid image data.');
 		}
@@ -490,26 +489,38 @@ class Image
 		$this->resource = $resource;
 	}
 
+	private function buildDataUri($data, $mimeType = null)
+	{
+		return sprintf('data:%s;base64,%s',
+			($mimeType === null) ? 'application/octet-stream' : $mimeType,
+			base64_encode($data)
+		);
+	}
+
+	private function imageTypeToMimeType($type)
+	{
+		if (function_exists('image_type_to_mime_type')) {
+			return image_type_to_mime_type($type);
+		}
+		switch ($type) {
+		case IMAGETYPE_GIF:
+			return 'image/gif';
+			break;
+		case IMAGETYPE_JPEG:
+			return 'image/jpeg';
+			break;
+		case IMAGETYPE_PNG:
+			return 'image/png';
+			break;
+		default:
+			break;
+		}
+		return null;
+	}
+
 	private function outputHeader($type)
 	{
-		$mimeType = null;
-		if (function_exists('image_type_to_mime_type')) {
-			$mimeType = image_type_to_mime_type($type);
-		} else {
-			switch ($type) {
-			case IMAGETYPE_GIF:
-				$mimeType = 'image/gif';
-				break;
-			case IMAGETYPE_JPEG:
-				$mimeType = 'image/jpeg';
-				break;
-			case IMAGETYPE_PNG:
-				$mimeType = 'image/png';
-				break;
-			default:
-				break;
-			}
-		}
+		$mimeType = $this->imageTypeToMimeType($type);
 		if ($mimeType !== null) {
 			header('Content-type: ' . $mimeType);
 		}
