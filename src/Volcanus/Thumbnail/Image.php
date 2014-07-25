@@ -460,7 +460,9 @@ class Image
 
 	private function initializeByData($data)
 	{
-		$imageInfo = @getimagesizefromstring($data);
+		$imageInfo = (function_exists('getimagesizefromstring'))
+			? @getimagesizefromstring($data)
+			: @getimagesize('data://application/octet-stream;base64' . base64_encode($data));
 		if (!is_array($imageInfo)) {
 			throw new \InvalidArgumentException('Invalid image data.');
 		}
