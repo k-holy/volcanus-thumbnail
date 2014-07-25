@@ -240,6 +240,16 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(600, $imageInfo[1]);
 	}
 
+	public function testDataUriWithType()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg',
+		));
+		$imageInfo = getimagesize($image->dataUri(IMAGETYPE_JPEG));
+		$this->assertEquals(800, $imageInfo[0]);
+		$this->assertEquals(600, $imageInfo[1]);
+	}
+
 	public function testContentTypeHeaderGif()
 	{
 		$image = new Image(array(

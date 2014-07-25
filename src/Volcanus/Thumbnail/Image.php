@@ -287,28 +287,30 @@ class Image
 	/**
 	 * DataURIを返します。
 	 *
+	 * @param int 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
 	 * @return string DataURI
 	 */
-	public function dataUri()
+	public function dataUri($type = null)
 	{
+		if ($type === null) {
+			$type = IMAGETYPE_PNG;
+		}
 		ob_start();
-		$this->output(null, IMAGETYPE_PNG);
+		$this->output(null, $type);
 		$data = ob_get_contents();
 		ob_end_clean();
-		return $this->buildDataUri($data, $this->imageTypeToMimeType(IMAGETYPE_PNG));
+		return $this->buildDataUri($data, image_type_to_mime_type($type));
 	}
 
 	/**
 	 * 指定したタイプのContent-Typeヘッダを返します。
 	 *
-	 * @param string 出力画像ファイルパス。省略時は標準出力
 	 * @param int 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
-	 * @param int 画像の品質 (JPEGのみ有効)
-	 * @return bool 実行結果
+	 * @return string Content-Typeヘッダ
 	 */
 	public function contentTypeHeader($type)
 	{
-		return sprintf('Content-Type: %s', $this->imageTypeToMimeType($type));
+		return sprintf('Content-Type: %s', image_type_to_mime_type($type));
 	}
 
 	/**
@@ -326,12 +328,10 @@ class Image
 		}
 		switch ($type) {
 		case IMAGETYPE_GIF:
-		case 'gif':
 			return ($path !== null)
 				? imagegif($this->resource, $path)
 				: imagegif($this->resource);
 		case IMAGETYPE_JPEG:
-		case 'jpeg':
 			if ($quality === null) {
 				return ($path !== null)
 					? imagejpeg($this->resource, $path)
@@ -339,7 +339,6 @@ class Image
 			}
 			return imagejpeg($this->resource, ($path !== null) ? $path : null, $quality);
 		case IMAGETYPE_PNG:
-		case 'png':
 			return ($path !== null)
 				? imagepng($this->resource, $path)
 				: imagepng($this->resource);
@@ -502,25 +501,6 @@ class Image
 			($mimeType === null) ? 'application/octet-stream' : $mimeType,
 			base64_encode($data)
 		);
-	}
-
-	private function imageTypeToMimeType($type)
-	{
-		if (function_exists('image_type_to_mime_type')) {
-			return image_type_to_mime_type($type);
-		}
-		switch ($type) {
-		case IMAGETYPE_GIF:
-			return 'image/gif';
-			break;
-		case IMAGETYPE_JPEG:
-			return 'image/jpeg';
-			break;
-		case IMAGETYPE_PNG:
-			return 'image/png';
-			break;
-		}
-		throw new \InvalidArgumentException('Unsupported image type.');
 	}
 
 }
