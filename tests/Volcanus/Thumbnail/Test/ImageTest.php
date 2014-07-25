@@ -186,4 +186,82 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(300, $thumbnail->getHeight());
 	}
 
+	public function testResizeByPercent()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg',
+		));
+		$thumbnail = $image->resizeByPercent(50);
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $thumbnail);
+		$this->assertEquals(400, $thumbnail->getWidth());
+		$this->assertEquals(300, $thumbnail->getHeight());
+	}
+
+	public function testResizeByPercentZoom()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg',
+		));
+		$thumbnail = $image->resizeByPercent(200);
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $thumbnail);
+		$this->assertEquals(1600, $thumbnail->getWidth());
+		$this->assertEquals(1200, $thumbnail->getHeight());
+	}
+
+	public function testResizeFromCenter()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg',
+		));
+		$thumbnail = $image->resizeFromCenter(200);
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $thumbnail);
+		$this->assertEquals(200, $thumbnail->getWidth());
+		$this->assertEquals(200, $thumbnail->getHeight());
+	}
+
+	public function testClip()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg',
+		));
+		$thumbnail = $image->clip(0, 0, 300, 200);
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $thumbnail);
+		$this->assertEquals(300, $thumbnail->getWidth());
+		$this->assertEquals(200, $thumbnail->getHeight());
+	}
+
+	public function testDataUri()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg',
+		));
+		$imageInfo = getimagesize($image->dataUri());
+		$this->assertEquals(800, $imageInfo[0]);
+		$this->assertEquals(600, $imageInfo[1]);
+	}
+
+	public function testContentTypeHeaderGif()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg',
+		));
+		$this->assertEquals('Content-Type: image/gif', $image->contentTypeHeader(IMAGETYPE_GIF));
+	}
+
+	public function testContentTypeHeaderJpeg()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg',
+		));
+		$this->assertEquals('Content-Type: image/jpeg', $image->contentTypeHeader(IMAGETYPE_JPEG));
+	}
+
+	public function testContentTypeHeaderPng()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg',
+		));
+		$this->assertEquals('Content-Type: image/png', $image->contentTypeHeader(IMAGETYPE_PNG));
+	}
+
 }

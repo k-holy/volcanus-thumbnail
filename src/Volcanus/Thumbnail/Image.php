@@ -285,6 +285,69 @@ class Image
 	}
 
 	/**
+	 * DataURIを返します。
+	 *
+	 * @return string DataURI
+	 */
+	public function dataUri()
+	{
+		ob_start();
+		$this->output(null, IMAGETYPE_PNG);
+		$data = ob_get_contents();
+		ob_end_clean();
+		return $this->buildDataUri($data, $this->imageTypeToMimeType(IMAGETYPE_PNG));
+	}
+
+	/**
+	 * 指定したタイプのContent-Typeヘッダを返します。
+	 *
+	 * @param string 出力画像ファイルパス。省略時は標準出力
+	 * @param int 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
+	 * @param int 画像の品質 (JPEGのみ有効)
+	 * @return bool 実行結果
+	 */
+	public function contentTypeHeader($type)
+	{
+		return sprintf('Content-Type: %s', $this->imageTypeToMimeType($type));
+	}
+
+	/**
+	 * 指定したタイプのGDイメージを出力します。
+	 *
+	 * @param string 出力画像ファイルパス。省略時は標準出力
+	 * @param int 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
+	 * @param int 画像の品質 (JPEGのみ有効)
+	 * @return bool 実行結果
+	 */
+	public function output($path = null, $type = null, $quality = null)
+	{
+		if ($type === null) {
+			$type = $this->type;
+		}
+		switch ($type) {
+		case IMAGETYPE_GIF:
+		case 'gif':
+			return ($path !== null)
+				? imagegif($this->resource, $path)
+				: imagegif($this->resource);
+		case IMAGETYPE_JPEG:
+		case 'jpeg':
+			if ($quality === null) {
+				return ($path !== null)
+					? imagejpeg($this->resource, $path)
+					: imagejpeg($this->resource);
+			}
+			return imagejpeg($this->resource, ($path !== null) ? $path : null, $quality);
+		case IMAGETYPE_PNG:
+		case 'png':
+			return ($path !== null)
+				? imagepng($this->resource, $path)
+				: imagepng($this->resource);
+		}
+		throw new \InvalidArgumentException('Unsupported image type.');
+	}
+
+	/**
 	 * 最大値を指定して、横幅と高さの数値を算出します。
 	 *
 	 * @param int 横幅
@@ -294,7 +357,7 @@ class Image
 	 * @param bool 端数を切り上げるかどうか
 	 * @return array 要素0に横幅、要素1に高さの値を格納した配列
 	 */
-	public function getSize($width, $height, $maxWidth, $maxHeight, $floor = true)
+	private function getSize($width, $height, $maxWidth, $maxHeight, $floor = true)
 	{
 		$size = array();
 		$wpercent = (100 * $maxWidth) / $width;
@@ -318,68 +381,12 @@ class Image
 	 * @param bool 端数を切り上げるかどうか
 	 * @return array 要素0に横幅、要素1に高さの値を格納した配列
 	 */
-	public function getSizeByPercent($width, $height, $percent, $floor = true)
+	private function getSizeByPercent($width, $height, $percent, $floor = true)
 	{
 		$size = array();
 		$size[0] = max(1, ($floor) ? floor(($width  * $percent) / 100) : ceil(($width  * $percent) / 100));
 		$size[1] = max(1, ($floor) ? floor(($height * $percent) / 100) : ceil(($height * $percent) / 100));
 		return $size;
-	}
-
-	/**
-	 * 指定したタイプのGDイメージを出力します。
-	 *
-	 * @param string 出力画像ファイルパス。省略時は標準出力
-	 * @param int 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
-	 * @param int 画像の品質 (JPEGのみ有効)
-	 * @return bool 実行結果
-	 */
-	public function dataUri()
-	{
-		ob_start();
-		$this->output(null, IMAGETYPE_PNG);
-		$data = ob_get_contents();
-		ob_end_clean();
-		return $this->buildDataUri($data, $this->imageTypeToMimeType(IMAGETYPE_PNG));
-	}
-
-	/**
-	 * 指定したタイプのGDイメージを出力します。
-	 *
-	 * @param string 出力画像ファイルパス。省略時は標準出力
-	 * @param int 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
-	 * @param int 画像の品質 (JPEGのみ有効)
-	 * @return bool 実行結果
-	 */
-	public function output($path = null, $type = null, $quality = null)
-	{
-		if ($type === null) {
-			$type = $this->type;
-		}
-		if ($path === null) {
-			$this->outputHeader($type);
-		}
-		switch ($type) {
-		case IMAGETYPE_GIF:
-		case 'gif':
-			return ($path !== null)
-				? imagegif($this->resource, $path)
-				: imagegif($this->resource);
-		case IMAGETYPE_JPEG:
-		case 'jpeg':
-			if ($quality === null) {
-				return ($path !== null)
-					? imagejpeg($this->resource, $path)
-					: imagejpeg($this->resource);
-			}
-			return imagejpeg($this->resource, ($path !== null) ? $path : null, $quality);
-		case IMAGETYPE_PNG:
-		case 'png':
-			return ($path !== null)
-				? imagepng($this->resource, $path)
-				: imagepng($this->resource);
-		}
-		return false;
 	}
 
 	/**
@@ -512,18 +519,8 @@ class Image
 		case IMAGETYPE_PNG:
 			return 'image/png';
 			break;
-		default:
-			break;
 		}
-		return null;
-	}
-
-	private function outputHeader($type)
-	{
-		$mimeType = $this->imageTypeToMimeType($type);
-		if ($mimeType !== null) {
-			header('Content-type: ' . $mimeType);
-		}
+		throw new \InvalidArgumentException('Unsupported image type.');
 	}
 
 }
