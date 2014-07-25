@@ -462,7 +462,7 @@ class Image
 	{
 		$imageInfo = (function_exists('getimagesizefromstring'))
 			? @getimagesizefromstring($data)
-			: @getimagesize('data://application/octet-stream;base64' . base64_encode($data));
+			: @getimagesize(sprintf('data://application/octet-stream;base64,%s', base64_encode($data)));
 		if (!is_array($imageInfo)) {
 			throw new \InvalidArgumentException('Invalid image data.');
 		}
