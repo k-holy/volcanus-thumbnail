@@ -76,6 +76,26 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(600, $image->getHeight());
 	}
 
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testInitializeRaiseExceptionWhenInvalidFloor()
+	{
+		$image = new Image(array(
+			'floor' => array(),
+		));
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testInitializeRaiseExceptionWhenKeyIsUnsupported()
+	{
+		$image = new Image(array(
+			'unsupported-key' => null,
+		));
+	}
+
 	public function testClear()
 	{
 		$path = $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg';
@@ -163,6 +183,56 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(IMAGETYPE_GIF, $imageInfo[2]);
 	}
 
+	public function testConvertGifToJpeg()
+	{
+		$srcPath = $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.gif';
+		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.jpg', __FUNCTION__);
+		$srcImage = new Image(array(
+			'path' => $srcPath,
+		));
+		$srcImage->output($dstPath, IMAGETYPE_JPEG);
+		$imageInfo = getimagesize($dstPath);
+		$this->assertEquals(IMAGETYPE_JPEG, $imageInfo[2]);
+	}
+
+	public function testConvertGifToPng()
+	{
+		$srcPath = $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.gif';
+		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.png', __FUNCTION__);
+		$srcImage = new Image(array(
+			'path' => $srcPath,
+		));
+		$srcImage->output($dstPath, IMAGETYPE_PNG);
+		$imageInfo = getimagesize($dstPath);
+		$this->assertEquals(IMAGETYPE_PNG, $imageInfo[2]);
+	}
+
+	public function testOutputJpegWithQuality()
+	{
+		$srcPath = $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg';
+		$dstPathLowQuality = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.low.jpg', __FUNCTION__);
+		$dstPathHighQuality = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.high.jpg', __FUNCTION__);
+		$srcImage = new Image(array(
+			'path' => $srcPath,
+		));
+		$srcImage->output($dstPathLowQuality, IMAGETYPE_JPEG, 50);
+		$srcImage->output($dstPathHighQuality, IMAGETYPE_JPEG, 100);
+		$this->assertGreaterThan(filesize($dstPathLowQuality), filesize($dstPathHighQuality));
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testOutputRaiseExceptionWhenUnsupportedImageTypeWasSpecified()
+	{
+		$srcPath = $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg';
+		$srcImage = new Image(array(
+			'path' => $srcPath,
+		));
+		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.bmp', __FUNCTION__);
+		$srcImage->output($dstPath, IMAGETYPE_BMP);
+	}
+
 	public function testResize()
 	{
 		$path = $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg';
@@ -186,6 +256,28 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(300, $thumbnail->getHeight());
 	}
 
+	public function testResizeWithFloor()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '700-525.png',
+			'floor' => true,
+		));
+		$thumbnail = $image->resize(350);
+		$this->assertEquals(350, $thumbnail->getWidth());
+		$this->assertEquals(262, $thumbnail->getHeight());
+	}
+
+	public function testResizeWithCeil()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '700-525.png',
+			'floor' => false,
+		));
+		$thumbnail = $image->resize(350);
+		$this->assertEquals(350, $thumbnail->getWidth());
+		$this->assertEquals(263, $thumbnail->getHeight());
+	}
+
 	public function testResizeByPercent()
 	{
 		$image = new Image(array(
@@ -206,6 +298,30 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $thumbnail);
 		$this->assertEquals(1600, $thumbnail->getWidth());
 		$this->assertEquals(1200, $thumbnail->getHeight());
+	}
+
+	public function testResizeByPercentWithFloor()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '700-525.png',
+			'floor' => true,
+		));
+		$thumbnail = $image->resizeByPercent(50);
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $thumbnail);
+		$this->assertEquals(350, $thumbnail->getWidth());
+		$this->assertEquals(262, $thumbnail->getHeight());
+	}
+
+	public function testResizeByPercentWithCeil()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '700-525.png',
+			'floor' => false,
+		));
+		$thumbnail = $image->resizeByPercent(50);
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $thumbnail);
+		$this->assertEquals(350, $thumbnail->getWidth());
+		$this->assertEquals(263, $thumbnail->getHeight());
 	}
 
 	public function testResizeFromCenter()
