@@ -326,6 +326,9 @@ class Image
 		if ($type === null) {
 			$type = $this->type;
 		}
+		if ($path instanceof \SplFileInfo) {
+			$path = $path->__toString();
+		}
 		switch ($type) {
 		case IMAGETYPE_GIF:
 			return ($path !== null)
@@ -442,6 +445,9 @@ class Image
 
 	private function initializeByPath($path)
 	{
+		if ($path instanceof \SplFileInfo) {
+			$path = $path->__toString();
+		}
 		$imageInfo = @getimagesize($path);
 		if (!is_array($imageInfo)) {
 			throw new \InvalidArgumentException('Invalid image path.');

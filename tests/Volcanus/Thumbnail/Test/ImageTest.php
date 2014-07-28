@@ -52,6 +52,22 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(600, $image->getHeight());
 	}
 
+	public function testInitializeByPathSplFileInfo()
+	{
+		$path = new \SplFileInfo($this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg');
+		ob_start();
+		$path->openFile('r')->fpassthru();
+		$data = ob_get_contents();
+		ob_end_clean();
+		$image = new Image(array(
+			'path' => $path,
+		));
+		$this->assertEquals($path, $image->getPath());
+		$this->assertEquals($data, $image->getData());
+		$this->assertEquals(800, $image->getWidth());
+		$this->assertEquals(600, $image->getHeight());
+	}
+
 	public function testInitializeByData()
 	{
 		$data = file_get_contents($this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg');
@@ -124,6 +140,21 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 	{
 		$srcPath = $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg';
 		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.jpg', __FUNCTION__);
+		$srcImage = new Image(array(
+			'path' => $srcPath,
+		));
+		$srcImage->output($dstPath);
+		$dstImage = new Image(array(
+			'path' => $dstPath,
+		));
+		$this->assertEquals($srcImage->getWidth(), $dstImage->getWidth());
+		$this->assertEquals($srcImage->getHeight(), $dstImage->getHeight());
+	}
+
+	public function testOutputWithPathSplFileInfo()
+	{
+		$srcPath = new \SplFileInfo($this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg');
+		$dstPath = new \SplFileInfo($this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.jpg', __FUNCTION__));
 		$srcImage = new Image(array(
 			'path' => $srcPath,
 		));
