@@ -48,6 +48,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		));
 		$this->assertEquals($path, $image->getPath());
 		$this->assertEquals($data, $image->getData());
+		$this->assertEquals(IMAGETYPE_JPEG, $image->getType());
 		$this->assertEquals(800, $image->getWidth());
 		$this->assertEquals(600, $image->getHeight());
 	}
@@ -64,6 +65,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		));
 		$this->assertEquals($path, $image->getPath());
 		$this->assertEquals($data, $image->getData());
+		$this->assertEquals(IMAGETYPE_JPEG, $image->getType());
 		$this->assertEquals(800, $image->getWidth());
 		$this->assertEquals(600, $image->getHeight());
 	}
@@ -88,6 +90,21 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		));
 		$this->assertNull($image->getPath());
 		$this->assertNull($image->getData());
+		$this->assertNull($image->getType());
+		$this->assertEquals(800, $image->getWidth());
+		$this->assertEquals(600, $image->getHeight());
+	}
+
+	public function testInitializeByResourceWithType()
+	{
+		$resource = imagecreatetruecolor(800, 600);
+		$image = new Image(array(
+			'resource' => $resource,
+			'type' => IMAGETYPE_PNG,
+		));
+		$this->assertNull($image->getPath());
+		$this->assertNull($image->getData());
+		$this->assertEquals(IMAGETYPE_PNG, $image->getType());
 		$this->assertEquals(800, $image->getWidth());
 		$this->assertEquals(600, $image->getHeight());
 	}
@@ -121,6 +138,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$image->clear();
 		$this->assertNull($image->getPath());
 		$this->assertNull($image->getData());
+		$this->assertNull($image->getType());
 		$this->assertNull($image->getWidth());
 		$this->assertNull($image->getHeight());
 	}

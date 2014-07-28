@@ -93,6 +93,21 @@ class Image
 				case 'resource':
 					$this->initializeByResource($value);
 					break;
+				case 'type':
+					if (!is_int($value)) {
+						throw new \InvalidArgumentException(
+							sprintf('The config %s only accepts integer. type:%s', $name, (is_object($value))
+								? get_class($value) : gettype($value)
+							)
+						);
+					}
+					if (!$this->supportedType($value)) {
+						throw new \InvalidArgumentException(
+							sprintf('The config %s is unsupported type.', $name)
+						);
+					}
+					$this->type = $value;
+					break;
 				case 'floor':
 					if (!is_int($value) && !ctype_digit($value) && !is_bool($value)) {
 						throw new \InvalidArgumentException(
@@ -165,6 +180,16 @@ class Image
 	public function getHeight()
 	{
 		return $this->height;
+	}
+
+	/**
+	 * 画像の種別を返します。
+	 *
+	 * @return int
+	 */
+	public function getType()
+	{
+		return $this->type;
 	}
 
 	/**
@@ -293,7 +318,7 @@ class Image
 	public function dataUri($type = null)
 	{
 		if ($type === null) {
-			$type = IMAGETYPE_PNG;
+			$type = ($this->type === null) ? IMAGETYPE_PNG : $this->type;
 		}
 		ob_start();
 		$this->output(null, $type);
@@ -308,8 +333,11 @@ class Image
 	 * @param int 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
 	 * @return string Content-Typeヘッダ
 	 */
-	public function contentTypeHeader($type)
+	public function contentTypeHeader($type = null)
 	{
+		if ($type == null) {
+			$type = $this->type;
+		}
 		return sprintf('Content-Type: %s', image_type_to_mime_type($type));
 	}
 
@@ -433,6 +461,7 @@ class Image
 		if ($result === true) {
 			return new self(array(
 				'resource' => $dstR,
+				'type' => $this->type,
 			));
 		}
 		throw new \RuntimeException('Could not create GD resource.');
@@ -505,6 +534,26 @@ class Image
 			($mimeType === null) ? 'application/octet-stream' : $mimeType,
 			base64_encode($data)
 		);
+	}
+
+	private function supportedType($type)
+	{
+		$_type = 0;
+		switch ($type) {
+		case IMAGETYPE_GIF:
+			$_type = IMG_GIF;
+			break;
+		case IMAGETYPE_JPEG:
+			$_type = IMG_JPG;
+			break;
+		case IMAGETYPE_PNG:
+			$_type = IMG_PNG;
+			break;
+		case IMAGETYPE_WBMP:
+			$_type = IMG_WBMP;
+			break;
+		}
+		return (($_type & imagetypes()) !== 0);
 	}
 
 }
