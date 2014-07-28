@@ -23,7 +23,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
-		$this->srcDirectory = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'img';
+		$this->srcDirectory = realpath(__DIR__ . '/../../../../images');
 		$this->dstDirectory = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'tmp';
 	}
 
