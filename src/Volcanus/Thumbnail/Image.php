@@ -404,16 +404,15 @@ class Image
 	{
 		$srcR = $this->resource;
 		$dstR = imagecreatetruecolor($dstW, $dstH);
-		$function = 'imagecopyresampled';
 		switch ($this->type) {
 		case IMAGETYPE_GIF:
 			$colorIndex = imagecolortransparent($srcR);
 			if ($colorIndex >= 0) {
 				$colors = imagecolorsforindex($srcR, $colorIndex);
-				$color = imagecolorallocate($dstR, $colors['red'], $colors['green'], $colors['blue']);
+				$transparent = imagecolorallocate($dstR, $colors['red'], $colors['green'], $colors['blue']);
 				imagepalettecopy($dstR, $srcR);
-				imagefill($dstR, $dstX, $dstY, $color);
-				imagecolortransparent($dstR, $color);
+				imagefill($dstR, $dstX, $dstY, $transparent);
+				imagecolortransparent($dstR, $transparent);
 			}
 			break;
 		case IMAGETYPE_PNG:
@@ -422,13 +421,12 @@ class Image
 			imagepalettecopy($dstR, $srcR);
 			imagefill($dstR, $dstX, $dstY, $transparentColor);
 			imagesavealpha($dstR, true);
-			$function = 'imagecopyresized';
 			break;
 		case IMAGETYPE_JPEG:
 		default:
 			break;
 		}
-		$result = $function($dstR, $srcR, $dstX, $dstY, $srcX, $srcY, $dstW, $dstH, $srcW, $srcH);
+		$result = imagecopyresampled($dstR, $srcR, $dstX, $dstY, $srcX, $srcY, $dstW, $dstH, $srcW, $srcH);
 		if ($result === true) {
 			return new self(array(
 				'resource' => $dstR,
