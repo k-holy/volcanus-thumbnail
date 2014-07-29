@@ -439,4 +439,17 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals('Content-Type: image/png', $image->contentTypeHeader(IMAGETYPE_PNG));
 	}
 
+	public function testDestroy()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg',
+		));
+		$this->assertTrue(is_resource($image->getResource()));
+		$before = memory_get_usage(false);
+		$image->destroy();
+		$after = memory_get_usage(false);
+		$this->assertNull($image->getResource());
+		$this->assertLessThan($before, $after);
+	}
+
 }

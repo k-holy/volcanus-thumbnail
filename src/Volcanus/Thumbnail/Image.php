@@ -74,6 +74,14 @@ class Image
 	}
 
 	/**
+	 * デストラクタ
+	 */
+	public function __destruct()
+	{
+		$this->destroy();
+	}
+
+	/**
 	 * オブジェクトを初期化します。
 	 *
 	 * @param array | ArrayAccess 設定オプション
@@ -135,11 +143,8 @@ class Image
 		$this->type = null;
 		$this->width = null;
 		$this->height = null;
-		if ($this->validResource($this->resource)) {
-			imagedestroy($this->resource);
-		}
-		$this->resource = null;
 		$this->floor = true;
+		$this->destroy();
 	}
 
 	/**
@@ -230,7 +235,7 @@ class Image
 		if ($srcW === $dstW && $srcH === $dstH) {
 			return $this;
 		}
-		return $this->createImage(0, 0, 0, 0, $dstW, $dstH, $srcW, $srcH);
+		return $this->createResizedImage(0, 0, 0, 0, $dstW, $dstH, $srcW, $srcH);
 	}
 
 	/**
@@ -244,7 +249,7 @@ class Image
 		$srcW = $this->width;
 		$srcH = $this->height;
 		list($dstW, $dstH) = $this->getSizeByPercent($srcW, $srcH, $percent, $this->floor);
-		return $this->createImage(0, 0, 0, 0, $dstW, $dstH, $srcW, $srcH);
+		return $this->createResizedImage(0, 0, 0, 0, $dstW, $dstH, $srcW, $srcH);
 	}
 
 	/**
@@ -272,7 +277,7 @@ class Image
 		} elseif ($srcW > $size || $srcH > $size) {
 			list($dstW, $dstH) = $this->getSize($srcW, $srcH, $size, $size, $this->floor);
 		}
-		return $this->createImage(0, 0, $startX, $startY, $dstW, $dstH, $srcW, $srcH);
+		return $this->createResizedImage(0, 0, $startX, $startY, $dstW, $dstH, $srcW, $srcH);
 	}
 
 	/**
@@ -306,7 +311,7 @@ class Image
 		if ($startY < 0) {
 			$startY = 0;
 		}
-		return $this->createImage(0, 0, $startX, $startY, $width, $height, $width, $height);
+		return $this->createResizedImage(0, 0, $startX, $startY, $width, $height, $width, $height);
 	}
 
 	/**
@@ -359,22 +364,43 @@ class Image
 		}
 		switch ($type) {
 		case IMAGETYPE_GIF:
-			return ($path !== null)
-				? imagegif($this->resource, $path)
-				: imagegif($this->resource);
+			if ($path !== null) {
+				imagegif($this->resource, $path);
+			} else {
+				imagegif($this->resource);
+			}
+			return $this;
 		case IMAGETYPE_JPEG:
 			if ($quality === null) {
-				return ($path !== null)
-					? imagejpeg($this->resource, $path)
-					: imagejpeg($this->resource);
+				if ($path !== null) {
+					imagejpeg($this->resource, $path);
+				} else {
+					imagejpeg($this->resource);
+				}
+			} else {
+				imagejpeg($this->resource, ($path !== null) ? $path : null, $quality);
 			}
-			return imagejpeg($this->resource, ($path !== null) ? $path : null, $quality);
+			return $this;
 		case IMAGETYPE_PNG:
-			return ($path !== null)
-				? imagepng($this->resource, $path)
-				: imagepng($this->resource);
+			if ($path !== null) {
+				imagepng($this->resource, $path);
+			} else {
+				imagepng($this->resource);
+			}
+			return $this;
 		}
 		throw new \InvalidArgumentException('Unsupported image type.');
+	}
+
+	/**
+	 * GDイメージリソースを破棄します。
+	 */
+	public function destroy()
+	{
+		if ($this->validResource($this->resource)) {
+			imagedestroy($this->resource);
+		}
+		$this->resource = null;
 	}
 
 	/**
@@ -431,7 +457,7 @@ class Image
 	 * @param int リサイズ元の横幅
 	 * @param int リサイズ元の高さ
 	 */
-	private function createImage($dstX, $dstY, $srcX, $srcY, $dstW, $dstH, $srcW, $srcH)
+	private function createResizedImage($dstX, $dstY, $srcX, $srcY, $dstW, $dstH, $srcW, $srcH)
 	{
 		$srcR = $this->resource;
 		$dstR = imagecreatetruecolor($dstW, $dstH);
@@ -459,10 +485,12 @@ class Image
 		}
 		$result = imagecopyresampled($dstR, $srcR, $dstX, $dstY, $srcX, $srcY, $dstW, $dstH, $srcW, $srcH);
 		if ($result === true) {
-			return new self(array(
+			$resized = new self(array(
 				'resource' => $dstR,
 				'type' => $this->type,
 			));
+			$this->destroy();
+			return $resized;
 		}
 		throw new \RuntimeException('Could not create GD resource.');
 	}
