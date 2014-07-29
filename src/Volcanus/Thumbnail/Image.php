@@ -479,12 +479,10 @@ class Image
 		}
 		$result = imagecopyresampled($dstR, $srcR, $dstX, $dstY, $srcX, $srcY, $dstW, $dstH, $srcW, $srcH);
 		if ($result === true) {
-			$resized = new self(array(
+			return new self(array(
 				'resource' => $dstR,
 				'type' => $this->type,
 			));
-			$this->destroy();
-			return $resized;
 		}
 		throw new \RuntimeException('Could not create GD resource.');
 	}
