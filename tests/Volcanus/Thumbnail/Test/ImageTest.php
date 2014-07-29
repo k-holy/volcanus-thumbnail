@@ -452,4 +452,17 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$this->assertLessThan($before, $after);
 	}
 
+	public function testDestructorCallDestroy()
+	{
+		$image = $this->getMock('\Volcanus\Thumbnail\Image', array('destroy'));
+		$image->expects($this->once())
+			->method('destroy')
+			->will($this->throwException(new \RuntimeException('OK')));
+
+		try {
+			$image->__destruct();
+		} catch (\RuntimeException $e) {
+		}
+	}
+
 }
