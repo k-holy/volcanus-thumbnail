@@ -214,23 +214,17 @@ class Image
 	 * @param int 高さ最大値
 	 * @return object Acme\Thumbnail\Image リサイズした画像
 	 */
-	public function resize($maxWidth = null, $maxHeight = null)
+	public function resize($maxWidth, $maxHeight = null)
 	{
 		$srcW = $this->width;
 		$srcH = $this->height;
-		if (!empty($maxWidth) && empty($maxHeight)) {
+		if (empty($maxHeight)) {
 			$maxHeight = $maxWidth;
-		}
-		if (!empty($maxHeight) && empty($maxWidth)) {
-			$maxWidth = $maxHeight;
 		}
 		$dstW  = $srcW;
 		$dstH = $srcH;
 		if ((!empty($maxWidth) && $srcW > $maxWidth) || (!empty($maxHeight) && $srcH > $maxHeight)) {
 			list($dstW, $dstH) = $this->getSize($srcW, $srcH, $maxWidth, $maxHeight, $this->floor);
-		}
-		if (1 > $dstW || 1 > $dstH) {
-			return false;
 		}
 		if ($srcW === $dstW && $srcH === $dstH) {
 			return $this;
