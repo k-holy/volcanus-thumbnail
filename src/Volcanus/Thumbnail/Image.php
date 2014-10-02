@@ -74,14 +74,6 @@ class Image
 	}
 
 	/**
-	 * デストラクタ
-	 */
-	public function __destruct()
-	{
-		$this->destroy();
-	}
-
-	/**
 	 * オブジェクトを初期化します。
 	 *
 	 * @param array | ArrayAccess 設定オプション
