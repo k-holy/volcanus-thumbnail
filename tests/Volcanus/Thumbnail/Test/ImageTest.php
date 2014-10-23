@@ -29,14 +29,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 
 	public function tearDown()
 	{
-		$it = new \RecursiveIteratorIterator(
-			new \RecursiveDirectoryIterator($this->dstDirectory)
-		);
-		foreach ($it as $file) {
-			if ($file->isFile() && $file->getBaseName() !== '.gitignore') {
-				unlink($file);
-			}
-		}
+		$this->clearDirectory();
 	}
 
 	public function testInitializeByPath()
@@ -507,6 +500,123 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(200, $thumbnail->getHeight());
 	}
 
+	public function testFlip()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.png',
+		));
+		$flipped = $image->flip();
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $flipped);
+		$this->assertEquals(800, $flipped->getWidth());
+		$this->assertEquals(600, $flipped->getHeight());
+		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.png', __FUNCTION__);
+		$flipped->output($dstPath);
+	}
+
+	public function testFlop()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.png',
+		));
+		$flopped = $image->flop();
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $flopped);
+		$this->assertEquals(800, $flopped->getWidth());
+		$this->assertEquals(600, $flopped->getHeight());
+		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.png', __FUNCTION__);
+		$flopped->output($dstPath);
+	}
+
+	public function testRotateByOrientationTopRight()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.png',
+		));
+		$rotated = $image->rotateByOrientation(Image::ORIENTATION_TOPRIGHT);
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $rotated);
+		$this->assertEquals(800, $rotated->getWidth());
+		$this->assertEquals(600, $rotated->getHeight());
+		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.png', __FUNCTION__);
+		$rotated->output($dstPath);
+	}
+
+	public function testRotateByOrientationBottomRight()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.png',
+		));
+		$rotated = $image->rotateByOrientation(Image::ORIENTATION_BOTTOMRIGHT);
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $rotated);
+		$this->assertEquals(800, $rotated->getWidth());
+		$this->assertEquals(600, $rotated->getHeight());
+		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.png', __FUNCTION__);
+		$rotated->output($dstPath);
+	}
+
+	public function testRotateByOrientationBottomLeft()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.png',
+		));
+		$rotated = $image->rotateByOrientation(Image::ORIENTATION_BOTTOMLEFT);
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $rotated);
+		$this->assertEquals(800, $rotated->getWidth());
+		$this->assertEquals(600, $rotated->getHeight());
+		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.png', __FUNCTION__);
+		$rotated->output($dstPath);
+	}
+
+	public function testRotateByOrientationLeftTop()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.png',
+		));
+		$rotated = $image->rotateByOrientation(Image::ORIENTATION_LEFTTOP);
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $rotated);
+		$this->assertEquals(600, $rotated->getWidth());
+		$this->assertEquals(800, $rotated->getHeight());
+		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('600-800.%s.png', __FUNCTION__);
+		$rotated->output($dstPath);
+	}
+
+	public function testRotateByOrientationRightTop()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.png',
+		));
+		$rotated = $image->rotateByOrientation(Image::ORIENTATION_RIGHTTOP);
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $rotated);
+		$this->assertEquals(600, $rotated->getWidth());
+		$this->assertEquals(800, $rotated->getHeight());
+		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('600-800.%s.png', __FUNCTION__);
+		$rotated->output($dstPath);
+	}
+
+	public function testRotateByOrientationRightBottom()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.png',
+		));
+		$rotated = $image->rotateByOrientation(Image::ORIENTATION_RIGHTBOTTOM);
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $rotated);
+		$this->assertEquals(600, $rotated->getWidth());
+		$this->assertEquals(800, $rotated->getHeight());
+		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('600-800.%s.png', __FUNCTION__);
+		$rotated->output($dstPath);
+	}
+
+	public function testRotateByOrientationLeftBottom()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.png',
+		));
+		$rotated = $image->rotateByOrientation(Image::ORIENTATION_LEFTBOTTOM);
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $rotated);
+		$this->assertEquals(600, $rotated->getWidth());
+		$this->assertEquals(800, $rotated->getHeight());
+		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('600-800.%s.png', __FUNCTION__);
+		$rotated->output($dstPath);
+	}
+
 	public function testDataUri()
 	{
 		$image = new Image(array(
@@ -586,6 +696,18 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$after = memory_get_usage(false);
 		$this->assertNull($image->getResource());
 		$this->assertLessThan($before, $after);
+	}
+
+	private function clearDirectory()
+	{
+		$it = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator($this->dstDirectory)
+		);
+		foreach ($it as $file) {
+			if ($file->isFile() && $file->getBaseName() !== '.gitignore') {
+				unlink($file);
+			}
+		}
 	}
 
 }

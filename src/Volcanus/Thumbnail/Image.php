@@ -16,6 +16,15 @@ namespace Volcanus\Thumbnail;
 class Image
 {
 
+	const ORIENTATION_TOPLEFT = 1;
+	const ORIENTATION_TOPRIGHT = 2;
+	const ORIENTATION_BOTTOMRIGHT = 3;
+	const ORIENTATION_BOTTOMLEFT = 4;
+	const ORIENTATION_LEFTTOP = 5;
+	const ORIENTATION_RIGHTTOP = 6;
+	const ORIENTATION_RIGHTBOTTOM = 7;
+	const ORIENTATION_LEFTBOTTOM = 8;
+
 	/**
 	 * ファイルパス
 	 * @var string
@@ -298,6 +307,83 @@ class Image
 			$startY = 0;
 		}
 		return $this->createResizedImage(0, 0, $startX, $startY, $width, $height, $width, $height);
+	}
+
+	/**
+	 * 垂直反転した画像を返します。
+	 *
+	 * @return object Acme\Thumbnail\Image 垂直反転した画像
+	 */
+	public function flip()
+	{
+		$width = imagesx($this->resource);
+		$height = imagesy($this->resource);
+		return $this->createResizedImage(0, 0, 0, $height, $width, $height, $width, -$height);
+	}
+
+	/**
+	 * 水平反転した画像を返します。
+	 *
+	 * @return object Acme\Thumbnail\Image 水平反転した画像
+	 */
+	public function flop()
+	{
+		$width = imagesx($this->resource);
+		$height = imagesy($this->resource);
+		return $this->createResizedImage(0, 0, $width, 0, $width, $height, -$width, $height);
+	}
+
+	/**
+	 * 画像を回転して返します。
+	 *
+	 * @param float 角度
+	 * @param int 背景色
+	 * @param int 透過色を無視するかどうか
+	 * @return object Acme\Thumbnail\Image 回転した画像
+	 */
+	public function rotate($angle, $backgroundColor = 0, $ignoreTransparent = 0)
+	{
+		return new self(array(
+			'resource' => imagerotate($this->resource, $angle, $backgroundColor, $ignoreTransparent),
+			'type' => $this->type,
+		));
+	}
+
+	/**
+	 * Exif情報のOrientation値を元に画像を回転します。
+	 *
+	 * @param int Orientation値 (1-8)
+	 * @return object Acme\Thumbnail\Image 回転した画像
+	 */
+	public function rotateByOrientation($orientation)
+	{
+		switch ($orientation) {
+		// 1
+		case self::ORIENTATION_TOPLEFT:
+			return $this;
+		// 2
+		case self::ORIENTATION_TOPRIGHT:
+			return $this->flop();
+		// 3
+		case self::ORIENTATION_BOTTOMRIGHT:
+			return $this->rotate(180);
+		// 4
+		case self::ORIENTATION_BOTTOMLEFT:
+			return $this->flip();
+		// 5
+		case self::ORIENTATION_LEFTTOP:
+			return $this->flop()->rotate(270);
+		// 6
+		case self::ORIENTATION_RIGHTTOP:
+			return $this->rotate(90);
+		// 7
+		case self::ORIENTATION_RIGHTBOTTOM:
+			return $this->flop()->rotate(90);
+		// 8
+		case self::ORIENTATION_LEFTBOTTOM:
+			return $this->rotate(270);
+		}
+		throw new \RuntimeException(sprintf('Could not rotate by orientation "%s"', $orientation));
 	}
 
 	/**
