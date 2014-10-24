@@ -83,6 +83,17 @@ class Image
 	}
 
 	/**
+	 * 複製したオブジェクトを返します。
+	 */
+	public function __clone()
+	{
+		$original = $this->resource;
+		$copy = imagecreatetruecolor($this->width, $this->height);
+		imagecopy($copy, $original, 0, 0, 0, 0, $this->width, $this->height);
+		$this->resource = $copy;
+	}
+
+	/**
 	 * オブジェクトを初期化します。
 	 *
 	 * @param array | ArrayAccess 設定オプション
@@ -316,8 +327,8 @@ class Image
 	 */
 	public function flip()
 	{
-		$width = imagesx($this->resource);
-		$height = imagesy($this->resource);
+		$width = $this->width;
+		$height = $this->height;
 		return $this->transform(0, 0, 0, $height, $width, $height, $width, -$height);
 	}
 
@@ -328,8 +339,8 @@ class Image
 	 */
 	public function flop()
 	{
-		$width = imagesx($this->resource);
-		$height = imagesy($this->resource);
+		$width = $this->width;
+		$height = $this->height;
 		return $this->transform(0, 0, $width, 0, $width, $height, -$width, $height);
 	}
 
