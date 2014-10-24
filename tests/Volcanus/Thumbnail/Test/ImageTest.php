@@ -617,6 +617,9 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$rotated->output($dstPath);
 	}
 
+	/**
+	 * @medium
+	 */
 	public function testRotateOrientationTopLeftFromExif()
 	{
 		$filename = 'orientation(1).jpg';
@@ -632,6 +635,9 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$rotated->output($dstPath, IMAGETYPE_PNG);
 	}
 
+	/**
+	 * @medium
+	 */
 	public function testRotateOrientationBottomRightFromExif()
 	{
 		$filename = 'orientation(3).jpg';
@@ -647,6 +653,9 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$rotated->output($dstPath, IMAGETYPE_PNG);
 	}
 
+	/**
+	 * @medium
+	 */
 	public function testRotateOrientationRightTopFromExif()
 	{
 		$filename = 'orientation(6).jpg';
@@ -662,6 +671,9 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$rotated->output($dstPath, IMAGETYPE_PNG);
 	}
 
+	/**
+	 * @medium
+	 */
 	public function testRotateOrientationLeftTopFromExif()
 	{
 		$filename = 'orientation(8).jpg';
