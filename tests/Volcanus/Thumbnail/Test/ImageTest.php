@@ -140,6 +140,26 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		));
 	}
 
+	public function testClone()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.png',
+		));
+		$cloned = clone $image;
+		$this->assertTrue(is_resource($image->getResource()));
+		$this->assertStringStartsWith('gd', get_resource_type($image->getResource()));
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $cloned);
+		$this->assertEquals($cloned->getPath(), $image->getPath());
+		$this->assertEquals($cloned->getData(), $image->getData());
+		$this->assertEquals($cloned->getType(), $image->getType());
+		$this->assertEquals($cloned->getWidth(), $image->getWidth());
+		$this->assertEquals($cloned->getHeight(), $image->getHeight());
+		$this->assertNotEquals($cloned->getResource(), $image->getResource());
+		$image->clear();
+		$this->assertTrue(is_resource($cloned->getResource()));
+		$this->assertStringStartsWith('gd', get_resource_type($cloned->getResource()));
+	}
+
 	public function testClear()
 	{
 		$image = new Image(array(
