@@ -222,7 +222,7 @@ class Image
 		if (empty($maxHeight)) {
 			$maxHeight = $maxWidth;
 		}
-		$dstW  = $srcW;
+		$dstW = $srcW;
 		$dstH = $srcH;
 		if ((!empty($maxWidth) && $srcW > $maxWidth) || (!empty($maxHeight) && $srcH > $maxHeight)) {
 			list($dstW, $dstH) = $this->getSize($srcW, $srcH, $maxWidth, $maxHeight, $this->floor);
@@ -230,7 +230,7 @@ class Image
 		if ($srcW === $dstW && $srcH === $dstH) {
 			return $this;
 		}
-		return $this->createResizedImage(0, 0, 0, 0, $dstW, $dstH, $srcW, $srcH);
+		return $this->transform(0, 0, 0, 0, $dstW, $dstH, $srcW, $srcH);
 	}
 
 	/**
@@ -244,7 +244,7 @@ class Image
 		$srcW = $this->width;
 		$srcH = $this->height;
 		list($dstW, $dstH) = $this->getSizeByPercent($srcW, $srcH, $percent, $this->floor);
-		return $this->createResizedImage(0, 0, 0, 0, $dstW, $dstH, $srcW, $srcH);
+		return $this->transform(0, 0, 0, 0, $dstW, $dstH, $srcW, $srcH);
 	}
 
 	/**
@@ -272,7 +272,7 @@ class Image
 		} elseif ($srcW > $size || $srcH > $size) {
 			list($dstW, $dstH) = $this->getSize($srcW, $srcH, $size, $size, $this->floor);
 		}
-		return $this->createResizedImage(0, 0, $startX, $startY, $dstW, $dstH, $srcW, $srcH);
+		return $this->transform(0, 0, $startX, $startY, $dstW, $dstH, $srcW, $srcH);
 	}
 
 	/**
@@ -306,31 +306,31 @@ class Image
 		if ($startY < 0) {
 			$startY = 0;
 		}
-		return $this->createResizedImage(0, 0, $startX, $startY, $width, $height, $width, $height);
+		return $this->transform(0, 0, $startX, $startY, $width, $height, $width, $height);
 	}
 
 	/**
-	 * 垂直反転した画像を返します。
+	 * 上下反転した画像を返します。
 	 *
-	 * @return object Acme\Thumbnail\Image 垂直反転した画像
+	 * @return object Acme\Thumbnail\Image 上下反転した画像
 	 */
 	public function flip()
 	{
 		$width = imagesx($this->resource);
 		$height = imagesy($this->resource);
-		return $this->createResizedImage(0, 0, 0, $height, $width, $height, $width, -$height);
+		return $this->transform(0, 0, 0, $height, $width, $height, $width, -$height);
 	}
 
 	/**
-	 * 水平反転した画像を返します。
+	 * 左右反転した画像を返します。
 	 *
-	 * @return object Acme\Thumbnail\Image 水平反転した画像
+	 * @return object Acme\Thumbnail\Image 左右反転した画像
 	 */
 	public function flop()
 	{
 		$width = imagesx($this->resource);
 		$height = imagesy($this->resource);
-		return $this->createResizedImage(0, 0, $width, 0, $width, $height, -$width, $height);
+		return $this->transform(0, 0, $width, 0, $width, $height, -$width, $height);
 	}
 
 	/**
@@ -343,10 +343,12 @@ class Image
 	 */
 	public function rotate($angle, $backgroundColor = 0, $ignoreTransparent = 0)
 	{
-		return new self(array(
+		$image = new self(array(
 			'resource' => imagerotate($this->resource, $angle, $backgroundColor, $ignoreTransparent),
 			'type' => $this->type,
 		));
+		$this->destroy();
+		return $image;
 	}
 
 	/**
@@ -529,7 +531,7 @@ class Image
 	 * @param int リサイズ元の横幅
 	 * @param int リサイズ元の高さ
 	 */
-	private function createResizedImage($dstX, $dstY, $srcX, $srcY, $dstW, $dstH, $srcW, $srcH)
+	private function transform($dstX, $dstY, $srcX, $srcY, $dstW, $dstH, $srcW, $srcH)
 	{
 		$srcR = $this->resource;
 		$dstR = imagecreatetruecolor($dstW, $dstH);
@@ -557,6 +559,7 @@ class Image
 		}
 		$result = imagecopyresampled($dstR, $srcR, $dstX, $dstY, $srcX, $srcY, $dstW, $dstH, $srcW, $srcH);
 		if ($result === true) {
+			$this->destroy();
 			return new self(array(
 				'resource' => $dstR,
 				'type' => $this->type,

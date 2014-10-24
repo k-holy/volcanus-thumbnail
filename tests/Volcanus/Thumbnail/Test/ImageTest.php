@@ -617,6 +617,66 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$rotated->output($dstPath);
 	}
 
+	public function testRotateOrientationTopLeftFromExif()
+	{
+		$filename = 'orientation(1).jpg';
+		$path = $this->srcDirectory . DIRECTORY_SEPARATOR . $filename;
+		$image = new Image(array(
+			'path' => $path,
+		));
+		$rotated = $image->rotateByOrientation($this->getOrientationFrom($path));
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $rotated);
+		$this->assertEquals(2592, $rotated->getWidth());
+		$this->assertEquals(1936, $rotated->getHeight());
+		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('%s.%s.png', $filename, __FUNCTION__);
+		$rotated->output($dstPath, IMAGETYPE_PNG);
+	}
+
+	public function testRotateOrientationBottomRightFromExif()
+	{
+		$filename = 'orientation(3).jpg';
+		$path = $this->srcDirectory . DIRECTORY_SEPARATOR . $filename;
+		$image = new Image(array(
+			'path' => $path,
+		));
+		$rotated = $image->rotateByOrientation($this->getOrientationFrom($path));
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $rotated);
+		$this->assertEquals(2592, $rotated->getWidth());
+		$this->assertEquals(1936, $rotated->getHeight());
+		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('%s.%s.png', $filename, __FUNCTION__);
+		$rotated->output($dstPath, IMAGETYPE_PNG);
+	}
+
+	public function testRotateOrientationRightTopFromExif()
+	{
+		$filename = 'orientation(6).jpg';
+		$path = $this->srcDirectory . DIRECTORY_SEPARATOR . $filename;
+		$image = new Image(array(
+			'path' => $path,
+		));
+		$rotated = $image->rotateByOrientation($this->getOrientationFrom($path));
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $rotated);
+		$this->assertEquals(1936, $rotated->getWidth());
+		$this->assertEquals(2592, $rotated->getHeight());
+		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('%s.%s.png', $filename, __FUNCTION__);
+		$rotated->output($dstPath, IMAGETYPE_PNG);
+	}
+
+	public function testRotateOrientationLeftTopFromExif()
+	{
+		$filename = 'orientation(8).jpg';
+		$path = $this->srcDirectory . DIRECTORY_SEPARATOR . $filename;
+		$image = new Image(array(
+			'path' => $path,
+		));
+		$rotated = $image->rotateByOrientation($this->getOrientationFrom($path));
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $rotated);
+		$this->assertEquals(1936, $rotated->getWidth());
+		$this->assertEquals(2592, $rotated->getHeight());
+		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('%s.%s.png', $filename, __FUNCTION__);
+		$rotated->output($dstPath, IMAGETYPE_PNG);
+	}
+
 	public function testDataUri()
 	{
 		$image = new Image(array(
@@ -708,6 +768,15 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 				unlink($file);
 			}
 		}
+	}
+
+	private function getOrientationFrom($path)
+	{
+		$exif = exif_read_data($path);
+		if (isset($exif['Orientation'])) {
+			return $exif['Orientation'];
+		}
+		return null;
 	}
 
 }
