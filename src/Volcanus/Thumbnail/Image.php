@@ -372,16 +372,16 @@ class Image
 			return $this->flip();
 		// 5
 		case self::ORIENTATION_LEFTTOP:
-			return $this->flop()->rotate(270);
+			return $this->rotate(270)->flop();
 		// 6
 		case self::ORIENTATION_RIGHTTOP:
-			return $this->rotate(90);
+			return $this->rotate(270);
 		// 7
 		case self::ORIENTATION_RIGHTBOTTOM:
-			return $this->flop()->rotate(90);
+			return $this->rotate(90)->flop();
 		// 8
 		case self::ORIENTATION_LEFTBOTTOM:
-			return $this->rotate(270);
+			return $this->rotate(90);
 		}
 		throw new \RuntimeException(sprintf('Could not rotate by orientation "%s"', $orientation));
 	}
