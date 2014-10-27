@@ -327,6 +327,10 @@ class Image
 	 */
 	public function flip()
 	{
+		if (function_exists('imageflip')) {
+			imageflip($this->resource, IMG_FLIP_VERTICAL);
+			return $this;
+		}
 		$width = $this->width;
 		$height = $this->height;
 		return $this->transform(0, 0, 0, $height, $width, $height, $width, -$height);
@@ -339,6 +343,10 @@ class Image
 	 */
 	public function flop()
 	{
+		if (function_exists('imageflip')) {
+			imageflip($this->resource, IMG_FLIP_HORIZONTAL);
+			return $this;
+		}
 		$width = $this->width;
 		$height = $this->height;
 		return $this->transform(0, 0, $width, 0, $width, $height, -$width, $height);
