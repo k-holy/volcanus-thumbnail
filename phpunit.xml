@@ -13,7 +13,7 @@
     stopOnFailure="false"
     stopOnIncomplete="false"
     stopOnSkipped="false"
-    strict="true"
+    syntaxCheck="true"
     timeoutForSmallTests="1"
     timeoutForMediumTests="5"
     timeoutForLargeTests="10"
@@ -21,7 +21,7 @@
 >
     <testsuites>
         <testsuite name="Volcanus_Thumbnail">
-            <directory suffix="Test.php">./tests/Volcanus/Thumbnail/Test/</directory>
+            <directory suffix="Test.php">./tests/Volcanus/Thumbnail/Test</directory>
         </testsuite>
     </testsuites>
     <filter>
