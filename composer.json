@@ -11,13 +11,10 @@
         }
     ],
     "autoload": {
-        "psr-0": { "Volcanus\\Thumbnail": "src/" }
+        "psr-4": { "Volcanus\\Thumbnail\\": "src/" }
     },
     "require": {
         "php": ">=5.3.3",
         "ext-mcrypt" : "*"
-    },
-    "require-dev": {
-        "satooshi/php-coveralls": "dev-master"
     }
 }
