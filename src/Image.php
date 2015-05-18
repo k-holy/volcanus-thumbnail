@@ -408,12 +408,12 @@ class Image
 	}
 
 	/**
-	 * DataURIを返します。
+	 * バイナリを文字列で返します。
 	 *
 	 * @param int 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
-	 * @return string DataURI
+	 * @return string バイナリ文字列
 	 */
-	public function dataUri($type = null)
+	public function binary($type = null)
 	{
 		if ($type === null) {
 			$type = ($this->type === null) ? IMAGETYPE_PNG : $this->type;
@@ -422,7 +422,29 @@ class Image
 		$this->output(null, $type);
 		$data = ob_get_contents();
 		ob_end_clean();
-		return $this->buildDataUri($data, image_type_to_mime_type($type));
+		return $data;
+	}
+
+	/**
+	 * BASE64エンコード文字列で返します。
+	 *
+	 * @param int 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
+	 * @return string BASE64エンコード文字列
+	 */
+	public function base64Encode($type = null)
+	{
+		return base64_encode($this->binary($type));
+	}
+
+	/**
+	 * DataURIを返します。
+	 *
+	 * @param int 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
+	 * @return string DataURI
+	 */
+	public function dataUri($type = null)
+	{
+		return $this->buildDataUri($this->binary($type), image_type_to_mime_type($type));
 	}
 
 	/**
