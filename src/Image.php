@@ -630,7 +630,9 @@ class Image
 		$this->path = $path;
 		$this->width = $imageInfo[0];
 		$this->height = $imageInfo[1];
-		$this->type = $imageInfo[2];
+		if ($this->type === null) {
+			$this->type = $imageInfo[2];
+		}
 		$resource = imagecreatefromstring($this->data);
 		if (!$this->validResource($resource)) {
 			throw new \InvalidArgumentException('Could not create GD resource.');
@@ -652,7 +654,9 @@ class Image
 		$this->data = $data;
 		$this->width = $imageInfo[0];
 		$this->height = $imageInfo[1];
-		$this->type = $imageInfo[2];
+		if ($this->type === null) {
+			$this->type = $imageInfo[2];
+		}
 		$resource = imagecreatefromstring($this->data);
 		if (!$this->validResource($resource)) {
 			throw new \InvalidArgumentException('Could not create GD resource.');
