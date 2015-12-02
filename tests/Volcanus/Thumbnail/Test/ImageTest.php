@@ -23,7 +23,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
-		$this->srcDirectory = realpath(__DIR__ . '/../../../../images');
+		$this->srcDirectory = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'src';
 		$this->dstDirectory = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'tmp';
 	}
 
@@ -46,6 +46,21 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(600, $image->getHeight());
 	}
 
+	public function testInitializeByPathWithType()
+	{
+		$path = $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.png';
+		$data = file_get_contents($path);
+		$image = new Image(array(
+			'path' => $path,
+			'type' => IMAGETYPE_JPEG,
+		));
+		$this->assertEquals($path, $image->getPath());
+		$this->assertEquals($data, $image->getData());
+		$this->assertEquals(IMAGETYPE_JPEG, $image->getType());
+		$this->assertEquals(800, $image->getWidth());
+		$this->assertEquals(600, $image->getHeight());
+	}
+
 	public function testInitializeByPathSplFileInfo()
 	{
 		$path = new \SplFileInfo($this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.png');
@@ -63,6 +78,24 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(600, $image->getHeight());
 	}
 
+	public function testInitializeByPathSplFileInfoWithType()
+	{
+		$path = new \SplFileInfo($this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.png');
+		ob_start();
+		$path->openFile('r')->fpassthru();
+		$data = ob_get_contents();
+		ob_end_clean();
+		$image = new Image(array(
+			'path' => $path,
+			'type' => IMAGETYPE_JPEG,
+		));
+		$this->assertEquals($path, $image->getPath());
+		$this->assertEquals($data, $image->getData());
+		$this->assertEquals(IMAGETYPE_JPEG, $image->getType());
+		$this->assertEquals(800, $image->getWidth());
+		$this->assertEquals(600, $image->getHeight());
+	}
+
 	public function testInitializeByData()
 	{
 		$data = file_get_contents($this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.png');
@@ -71,6 +104,21 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		));
 		$this->assertNull($image->getPath());
 		$this->assertEquals($data, $image->getData());
+		$this->assertEquals(IMAGETYPE_PNG, $image->getType());
+		$this->assertEquals(800, $image->getWidth());
+		$this->assertEquals(600, $image->getHeight());
+	}
+
+	public function testInitializeByDataWithType()
+	{
+		$data = file_get_contents($this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.png');
+		$image = new Image(array(
+			'data' => $data,
+			'type' => IMAGETYPE_JPEG,
+		));
+		$this->assertNull($image->getPath());
+		$this->assertEquals($data, $image->getData());
+		$this->assertEquals(IMAGETYPE_JPEG, $image->getType());
 		$this->assertEquals(800, $image->getWidth());
 		$this->assertEquals(600, $image->getHeight());
 	}
@@ -216,8 +264,9 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.jpg', __FUNCTION__);
 		$srcImage = new Image(array(
 			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.png',
+			'type' => IMAGETYPE_JPEG,
 		));
-		$srcImage->output($dstPath, IMAGETYPE_JPEG);
+		$srcImage->output($dstPath);
 		$imageInfo = getimagesize($dstPath);
 		$this->assertEquals(IMAGETYPE_JPEG, $imageInfo[2]);
 	}
@@ -227,8 +276,9 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.gif', __FUNCTION__);
 		$srcImage = new Image(array(
 			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.png',
+			'type' => IMAGETYPE_GIF,
 		));
-		$srcImage->output($dstPath, IMAGETYPE_GIF);
+		$srcImage->output($dstPath);
 		$imageInfo = getimagesize($dstPath);
 		$this->assertEquals(IMAGETYPE_GIF, $imageInfo[2]);
 	}
@@ -238,8 +288,9 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.png', __FUNCTION__);
 		$srcImage = new Image(array(
 			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg',
+			'type' => IMAGETYPE_PNG,
 		));
-		$srcImage->output($dstPath, IMAGETYPE_PNG);
+		$srcImage->output($dstPath);
 		$imageInfo = getimagesize($dstPath);
 		$this->assertEquals(IMAGETYPE_PNG, $imageInfo[2]);
 	}
@@ -249,8 +300,9 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.gif', __FUNCTION__);
 		$srcImage = new Image(array(
 			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.jpg',
+			'type' => IMAGETYPE_GIF,
 		));
-		$srcImage->output($dstPath, IMAGETYPE_GIF);
+		$srcImage->output($dstPath);
 		$imageInfo = getimagesize($dstPath);
 		$this->assertEquals(IMAGETYPE_GIF, $imageInfo[2]);
 	}
@@ -260,8 +312,9 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.jpg', __FUNCTION__);
 		$srcImage = new Image(array(
 			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.gif',
+			'type' => IMAGETYPE_JPEG,
 		));
-		$srcImage->output($dstPath, IMAGETYPE_JPEG);
+		$srcImage->output($dstPath);
 		$imageInfo = getimagesize($dstPath);
 		$this->assertEquals(IMAGETYPE_JPEG, $imageInfo[2]);
 	}
@@ -271,8 +324,9 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.png', __FUNCTION__);
 		$srcImage = new Image(array(
 			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.gif',
+			'type' => IMAGETYPE_PNG,
 		));
-		$srcImage->output($dstPath, IMAGETYPE_PNG);
+		$srcImage->output($dstPath);
 		$imageInfo = getimagesize($dstPath);
 		$this->assertEquals(IMAGETYPE_PNG, $imageInfo[2]);
 	}
