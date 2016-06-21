@@ -16,6 +16,7 @@ namespace Volcanus\Thumbnail;
 class Image
 {
 
+	const ORIENTATION_UNKNOWN = 0;
 	const ORIENTATION_TOPLEFT = 1;
 	const ORIENTATION_TOPRIGHT = 2;
 	const ORIENTATION_BOTTOMRIGHT = 3;
@@ -373,12 +374,14 @@ class Image
 	/**
 	 * Exif情報のOrientation値を元に画像を回転します。
 	 *
-	 * @param int Orientation値 (1-8)
+	 * @param int Orientation値 (0-8)
 	 * @return object Acme\Thumbnail\Image 回転した画像
 	 */
 	public function rotateByOrientation($orientation)
 	{
 		switch ($orientation) {
+		// 0 Androidのカメラアプリが0を返すので…
+		case self::ORIENTATION_UNKNOWN:
 		// 1
 		case self::ORIENTATION_TOPLEFT:
 			return $this;
@@ -404,7 +407,9 @@ class Image
 		case self::ORIENTATION_LEFTBOTTOM:
 			return $this->rotate(90);
 		}
-		throw new \RuntimeException(sprintf('Could not rotate by orientation "%s"', $orientation));
+		throw new \InvalidArgumentException(
+			sprintf('Could not rotate by orientation "%s"', $orientation)
+		);
 	}
 
 	/**

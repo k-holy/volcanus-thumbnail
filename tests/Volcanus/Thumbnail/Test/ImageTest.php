@@ -600,6 +600,32 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 		$flopped->output($dstPath);
 	}
 
+	public function testRotateByOrientationUnknown()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.png',
+		));
+		$rotated = $image->rotateByOrientation(Image::ORIENTATION_UNKNOWN);
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $rotated);
+		$this->assertEquals(800, $rotated->getWidth());
+		$this->assertEquals(600, $rotated->getHeight());
+		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.png', __FUNCTION__);
+		$rotated->output($dstPath);
+	}
+
+	public function testRotateByOrientationTopLeft()
+	{
+		$image = new Image(array(
+			'path' => $this->srcDirectory . DIRECTORY_SEPARATOR . '800-600.png',
+		));
+		$rotated = $image->rotateByOrientation(Image::ORIENTATION_TOPLEFT);
+		$this->assertInstanceOf('\Volcanus\Thumbnail\Image', $rotated);
+		$this->assertEquals(800, $rotated->getWidth());
+		$this->assertEquals(600, $rotated->getHeight());
+		$dstPath = $this->dstDirectory . DIRECTORY_SEPARATOR . sprintf('800-600.%s.png', __FUNCTION__);
+		$rotated->output($dstPath);
+	}
+
 	public function testRotateByOrientationTopRight()
 	{
 		$image = new Image(array(
