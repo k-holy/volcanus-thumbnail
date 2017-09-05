@@ -55,6 +55,7 @@ if (isset($_GET['thumbnail'])) {
 		(isset($conditions[0])) ? intval($conditions[0]) : null,
 		(isset($conditions[1])) ? intval($conditions[1]) : null
 	);
+    /** @noinspection PhpUnusedLocalVariableInspection */
 	$imageType = IMAGETYPE_PNG;
 	switch(strtolower($extension)) {
 	case 'gif':
@@ -175,6 +176,7 @@ $thumbnails[] = new Thumbnail(array(
 ?>
 <!DOCTYPE html>
 <html>
+<head>
 <meta charset="utf-8" />
 <title>Thumbnailテスト</title>
 </head>
