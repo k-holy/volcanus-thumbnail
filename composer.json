@@ -1,23 +1,25 @@
 {
-    "name": "volcanus/thumbnail",
-    "homepage": "https://github.com/k-holy/volcanus-thumbnail",
-    "type": "library",
-    "version": "0.7.1",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "k-holy",
-            "email": "k.holy74@gmail.com"
-        }
-    ],
-    "autoload": {
-        "psr-4": { "Volcanus\\Thumbnail\\": "src/" }
-    },
-    "require": {
-        "php": ">=5.3.9",
-        "ext-mcrypt" : "*"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^4.8"
+  "name": "volcanus/thumbnail",
+  "homepage": "https://github.com/k-holy/volcanus-thumbnail",
+  "type": "library",
+  "version": "0.7.1",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "k-holy",
+      "email": "k.holy74@gmail.com"
     }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Volcanus\\Thumbnail\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=5.3.9",
+    "ext-mcrypt": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^4.8"
+  }
 }
