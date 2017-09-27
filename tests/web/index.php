@@ -11,10 +11,20 @@ require_once __DIR__ . '/../bootstrap.php';
 
 class Thumbnail
 {
+    /** @var \Volcanus\Thumbnail\Image */
     public $image;
+
+    /** @var string */
     public $title;
+
+    /** @var bool */
     public $callScript = false;
 
+    /**
+     * Thumbnail constructor.
+     *
+     * @param array $props
+     */
     public function __construct($props)
     {
         if (isset($props['image'])) {
@@ -29,14 +39,30 @@ class Thumbnail
     }
 }
 
+/**
+ * @param string $var
+ * @return string
+ */
 function h($var)
 {
     return htmlspecialchars($var, ENT_QUOTES, 'UTF-8');
 }
 
+/**
+ * @param string $path
+ * @return mixed
+ */
 function getOrientationFrom($path)
 {
+    $errorLevel = error_reporting();
+    $errorLevelChanged = ($errorLevel & E_WARNING);
+    if ($errorLevelChanged) {
+        error_reporting($errorLevel ^ E_WARNING);
+    }
     $exif = exif_read_data($path);
+    if ($errorLevelChanged) {
+        error_reporting($errorLevel);
+    }
     if (isset($exif['Orientation'])) {
         return $exif['Orientation'];
     }
@@ -57,6 +83,7 @@ if (isset($_GET['thumbnail'])) {
         (isset($conditions[0])) ? intval($conditions[0]) : null,
         (isset($conditions[1])) ? intval($conditions[1]) : null
     );
+    /** @noinspection PhpUnusedLocalVariableInspection */
     $imageType = IMAGETYPE_PNG;
     switch (strtolower($extension)) {
         case 'gif':
@@ -177,8 +204,9 @@ $thumbnails[] = new Thumbnail(array(
 ?>
 <!DOCTYPE html>
 <html>
-<meta charset="utf-8"/>
-<title>Thumbnailテスト</title>
+<head>
+    <meta charset="utf-8"/>
+    <title>Thumbnailテスト</title>
 </head>
 <body>
 

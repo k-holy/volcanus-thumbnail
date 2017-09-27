@@ -1,6 +1,6 @@
 <?php
 /**
- * サムネイル
+ * Volcanus libraries for PHP
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -153,6 +153,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function testInitializeRaiseExceptionWhenInvalidType()
     {
+        /** @noinspection PhpUnusedLocalVariableInspection */
         $image = new Image(array(
             'type' => array(),
         ));
@@ -163,6 +164,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function testInitializeRaiseExceptionWhenUnsupportedType()
     {
+        /** @noinspection PhpUnusedLocalVariableInspection */
         $image = new Image(array(
             'type' => IMAGETYPE_PSD,
         ));
@@ -173,6 +175,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function testInitializeRaiseExceptionWhenInvalidFloor()
     {
+        /** @noinspection PhpUnusedLocalVariableInspection */
         $image = new Image(array(
             'floor' => array(),
         ));
@@ -183,6 +186,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function testInitializeRaiseExceptionWhenKeyIsUnsupported()
     {
+        /** @noinspection PhpUnusedLocalVariableInspection */
         $image = new Image(array(
             'unsupported-key' => null,
         ));
@@ -884,7 +888,15 @@ class ImageTest extends \PHPUnit_Framework_TestCase
 
     private function getOrientationFrom($path)
     {
+        $errorLevel = error_reporting();
+        $errorLevelChanged = ($errorLevel & E_WARNING);
+        if ($errorLevelChanged) {
+            error_reporting($errorLevel ^ E_WARNING);
+        }
         $exif = exif_read_data($path);
+        if ($errorLevelChanged) {
+            error_reporting($errorLevel);
+        }
         if (isset($exif['Orientation'])) {
             return $exif['Orientation'];
         }

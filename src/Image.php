@@ -1,6 +1,6 @@
 <?php
 /**
- * サムネイル
+ * Volcanus libraries for PHP
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -9,7 +9,7 @@
 namespace Volcanus\Thumbnail;
 
 /**
- * サムネイル画像生成クラス
+ * Image
  *
  * @author k.holy74@gmail.com
  */
@@ -64,7 +64,7 @@ class Image
     /**
      * 高さ
      *
-     * @var array
+     * @var int
      */
     private $height = null;
 
@@ -78,7 +78,7 @@ class Image
     /**
      * コンストラクタ
      *
-     * @param array | ArrayAccess 設定オプション
+     * @param array|\ArrayAccess 設定オプション
      */
     public function __construct($configurations = array())
     {
@@ -104,7 +104,8 @@ class Image
     /**
      * オブジェクトを初期化します。
      *
-     * @param array | ArrayAccess 設定オプション
+     * @param array|\ArrayAccess 設定オプション
+     * @return $this
      */
     public function initialize($configurations = array())
     {
@@ -230,9 +231,9 @@ class Image
     /**
      * 横幅および高さの最大値を指定して、リサイズ画像を生成します。
      *
-     * @param int 横幅最大値
-     * @param int 高さ最大値
-     * @return object Acme\Thumbnail\Image リサイズした画像
+     * @param int $maxWidth 横幅最大値
+     * @param int $maxHeight 高さ最大値
+     * @return \Volcanus\Thumbnail\Image リサイズした画像
      */
     public function resize($maxWidth, $maxHeight = null)
     {
@@ -255,8 +256,8 @@ class Image
     /**
      * 倍率を指定して、リサイズ画像を生成します。
      *
-     * @param int 倍率
-     * @return object Acme\Thumbnail\Image リサイズした画像
+     * @param int $percent 倍率
+     * @return \Volcanus\Thumbnail\Image リサイズした画像
      */
     public function resizeByPercent($percent)
     {
@@ -269,8 +270,8 @@ class Image
     /**
      * サイズを指定して、中央から正方形に切り抜いた画像を生成します。
      *
-     * @param int サイズ
-     * @return object Acme\Thumbnail\Image リサイズした画像
+     * @param int $size サイズ
+     * @return \Volcanus\Thumbnail\Image 切り抜いた画像
      */
     public function resizeFromCenter($size)
     {
@@ -297,11 +298,11 @@ class Image
     /**
      * X座標、Y座標、横幅、高さを指定して、切り抜き画像を生成します。
      *
-     * @param int 切り抜きを開始するX座標
-     * @param int 切り抜きを開始するY座標
-     * @param int 横幅
-     * @param int 高さ
-     * @return object Acme\Thumbnail\Image リサイズした画像
+     * @param int $startX 切り抜きを開始するX座標
+     * @param int $startY 切り抜きを開始するY座標
+     * @param int $width 横幅
+     * @param int $height 高さ
+     * @return \Volcanus\Thumbnail\Image 切り抜いた画像
      */
     public function clip($startX, $startY, $width, $height)
     {
@@ -331,7 +332,7 @@ class Image
     /**
      * 上下反転した画像を返します。
      *
-     * @return object Acme\Thumbnail\Image 上下反転した画像
+     * @return \Volcanus\Thumbnail\Image 上下反転した画像
      */
     public function flip()
     {
@@ -347,7 +348,7 @@ class Image
     /**
      * 左右反転した画像を返します。
      *
-     * @return object Acme\Thumbnail\Image 左右反転した画像
+     * @return \Volcanus\Thumbnail\Image 左右反転した画像
      */
     public function flop()
     {
@@ -363,10 +364,10 @@ class Image
     /**
      * 画像を回転して返します。
      *
-     * @param float 角度
-     * @param int 背景色
-     * @param int 透過色を無視するかどうか
-     * @return object Acme\Thumbnail\Image 回転した画像
+     * @param float $angle 角度
+     * @param int $backgroundColor 背景色
+     * @param int $ignoreTransparent 透過色を無視するかどうか
+     * @return \Volcanus\Thumbnail\Image 回転した画像
      */
     public function rotate($angle, $backgroundColor = 0, $ignoreTransparent = 0)
     {
@@ -381,8 +382,8 @@ class Image
     /**
      * Exif情報のOrientation値を元に画像を回転します。
      *
-     * @param int Orientation値 (0-8)
-     * @return object Acme\Thumbnail\Image 回転した画像
+     * @param int $orientation Orientation値 (0-8)
+     * @return \Volcanus\Thumbnail\Image 回転した画像
      */
     public function rotateByOrientation($orientation)
     {
@@ -422,7 +423,7 @@ class Image
     /**
      * バイナリを文字列で返します。
      *
-     * @param int 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
+     * @param int $type 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
      * @return string バイナリ文字列
      */
     public function binary($type = null)
@@ -440,7 +441,7 @@ class Image
     /**
      * BASE64エンコード文字列で返します。
      *
-     * @param int 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
+     * @param int $type 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
      * @return string BASE64エンコード文字列
      */
     public function base64Encode($type = null)
@@ -451,7 +452,7 @@ class Image
     /**
      * DataURIを返します。
      *
-     * @param int 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
+     * @param int $type 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
      * @return string DataURI
      */
     public function dataUri($type = null)
@@ -462,7 +463,7 @@ class Image
     /**
      * 指定したタイプのContent-Typeヘッダを返します。
      *
-     * @param int 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
+     * @param int $type 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
      * @return string Content-Typeヘッダ
      */
     public function contentTypeHeader($type = null)
@@ -476,10 +477,10 @@ class Image
     /**
      * 指定したタイプのGDイメージを出力します。
      *
-     * @param string 出力画像ファイルパス。省略時は標準出力
-     * @param int 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
-     * @param int 画像の品質 (JPEGのみ有効)
-     * @return bool 実行結果
+     * @param string $path 出力画像ファイルパス。省略時は標準出力
+     * @param int $type 画像ファイルのフォーマット定数 (IMAGETYPE_GIF | IMAGETYPE_JPEG | IMAGETYPE_PNG)
+     * @param int $quality 画像の品質 (JPEGのみ有効)
+     * @return $this
      */
     public function output($path = null, $type = null, $quality = null)
     {
@@ -533,11 +534,11 @@ class Image
     /**
      * 最大値を指定して、横幅と高さの数値を算出します。
      *
-     * @param int 横幅
-     * @param int 高さ
-     * @param int 横幅最大値
-     * @param int 高さ最大値
-     * @param bool 端数を切り上げるかどうか
+     * @param int $width 横幅
+     * @param int $height 高さ
+     * @param int $maxWidth 横幅最大値
+     * @param int , $maxHeight 高さ最大値
+     * @param bool $floor 端数を切り上げるかどうか
      * @return array 要素0に横幅、要素1に高さの値を格納した配列
      */
     private function getSize($width, $height, $maxWidth, $maxHeight, $floor = true)
@@ -558,10 +559,10 @@ class Image
     /**
      * 倍率を指定して、横幅と高さの数値を算出します
      *
-     * @param int 横幅
-     * @param int 高さ
-     * @param int 倍率
-     * @param bool 端数を切り上げるかどうか
+     * @param int $width 横幅
+     * @param int $height 高さ
+     * @param int $percent 倍率
+     * @param bool $floor 端数を切り上げるかどうか
      * @return array 要素0に横幅、要素1に高さの値を格納した配列
      */
     private function getSizeByPercent($width, $height, $percent, $floor = true)
@@ -575,14 +576,15 @@ class Image
     /**
      * リサイズする画像の座標・横幅・高さを指定して、リサイズ画像を生成します。
      *
-     * @param int リサイズ先のX座標
-     * @param int リサイズ先のY座標
-     * @param int リサイズ元のX座標
-     * @param int リサイズ元のY座標
-     * @param int リサイズ先の横幅
-     * @param int リサイズ先の高さ
-     * @param int リサイズ元の横幅
-     * @param int リサイズ元の高さ
+     * @param int $dstX リサイズ先のX座標
+     * @param int $dstY リサイズ先のY座標
+     * @param int $srcX リサイズ元のX座標
+     * @param int $srcY リサイズ元のY座標
+     * @param int $dstW リサイズ先の横幅
+     * @param int $dstH リサイズ先の高さ
+     * @param int $srcW リサイズ元の横幅
+     * @param int $srcH リサイズ元の高さ
+     * @return \Volcanus\Thumbnail\Image
      */
     private function transform($dstX, $dstY, $srcX, $srcY, $dstW, $dstH, $srcW, $srcH)
     {
